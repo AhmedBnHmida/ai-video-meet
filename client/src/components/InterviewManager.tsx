@@ -3,6 +3,9 @@ import axios from 'axios';
 import { InterviewType, InterviewStatus } from '../models/types';
 import { Interview, InterviewInput } from '../models/Interview';
 import { User } from '../models/User';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
+
 
 interface InterviewWithUsers extends Interview {
   interviewerName?: string;
@@ -168,8 +171,36 @@ const InterviewManager: React.FC = () => {
     }
   };
 
+
+  const navigate = useNavigate(); // Hook to navigate programmatically
+  const { setToken } = useAuth(); // Get setToken from AuthContext
+  
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // Remove the token from localStorage
+    setToken(null); // Clear the token from AuthContext
+    navigate('/'); // Redirect to login page after logout
+  };
+
   return (
     <div style={{ padding: '20px' }}>
+      <div style={{ textAlign: 'center', marginTop: '50px' }}>
+      <h1>Welcome to your Dashboard!</h1>
+      <p>You are successfully logged in.</p>
+      <button
+        onClick={handleLogout}
+        style={{
+          padding: '10px 20px',
+          fontSize: '16px',
+          backgroundColor: '#007BFF',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+        }}
+      >
+        Logout
+      </button>
+    </div>
       <h2>HR Interview Management</h2>
 
       {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}

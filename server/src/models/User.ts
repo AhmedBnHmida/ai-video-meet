@@ -74,13 +74,13 @@ export interface ICandidate extends IUser {
 
 // User Schema
 const userSchema = new Schema<IUser>({
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  firstName: { type: String },
+  lastName: { type: String  },
+  email: { type: String, unique: true },
   password: { type: String, required: true , default: 'SUPERSECRET'},
   role: { type: String, enum: Object.values(Role), default: Role.CANDIDATE },
   department: { type: String, enum: Object.values(Department), default: Department.OTHER },
-  phoneNumber: { type: String, required: true, default: '0000000000' },
+  phoneNumber: { type: String, default: '0000000000' },
   createDate: { type: Date, default: Date.now },
   lastLogin: { type: Date },
   image: { type: String },
