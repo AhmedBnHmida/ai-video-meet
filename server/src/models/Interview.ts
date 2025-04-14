@@ -2,6 +2,7 @@ import mongoose, { Document, Schema, Model } from 'mongoose';
 import { InterviewType, InterviewStatus } from './types';
 
 export interface IInterview extends Document {
+  id: string; // Explicitly add the id field to the interface
   application: Schema.Types.ObjectId;  // Reference to Application
   interviewer: Schema.Types.ObjectId;  // Reference to User (HR/Admin)
   candidate: Schema.Types.ObjectId;  // Reference to User (Candidate)
@@ -19,14 +20,14 @@ export interface IInterview extends Document {
 }
 
 const interviewSchema = new Schema<IInterview>({
-  application: { type: Schema.Types.ObjectId, ref: 'Application'},
+  application: { type: Schema.Types.ObjectId, ref: 'Application', required: true },
   interviewer: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   candidate: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  type: { type: String, enum: Object.values(InterviewType), required: true },
+  type: { type: String, enum: Object.values(InterviewType) },
   status: { type: String, enum: Object.values(InterviewStatus), default: InterviewStatus.SCHEDULED },
   scheduledDate: { type: Date, required: true },
   duration: { type: Number, required: true },
-  location: { type: String, required: true },
+  location: { type: String },
   notes: { type: String },
   feedback: [{ type: Schema.Types.ObjectId, ref: 'Feedback' }]
 }, {

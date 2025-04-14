@@ -1,100 +1,93 @@
 import { Request, Response } from 'express';
 import Interview from '../models/Interview';
-import { InterviewStatus, InterviewType } from '../models/types'; // Ensure InterviewStatus and InterviewType are correctly imported
 
-interface ICreateInterviewRequest extends Request {
-  body: {
-    application: string;
-    interviewer: string;
-    candidate: string;
-    type: InterviewType;
-    status: InterviewStatus;
-    scheduledDate: Date;
-    duration: number;
-    location: string;
-    notes: string;
-  };
-}
-
-// Create a new interview
-export const createInterview = async (req: ICreateInterviewRequest, res: Response): Promise<void> => {
+// ✅ Create a new interview
+export const createInterview = async (req: Request, res: Response) => {
   try {
-    const { application, interviewer, candidate, type, status, scheduledDate, duration, location, notes } = req.body;
-
-    const interview = new Interview({
-      application,
-      interviewer,
-      candidate,
-      type,
-      status,
-      scheduledDate,
-      duration,
-      location,
-      notes,
-      feedback: [],
-    });
-
+    console.log("Received data:", req.body);
+    const interview = new Interview(req.body);
     await interview.save();
-    res.status(201).json({ message: 'Interview created successfully', interview });
-  } catch (err) {
-    res.status(400).json({ error: (err as Error).message });
+    res.status(201).json(interview);
+  } catch (error) {
+    console.error("❌ Error creating interview:", error);
+    res.status(500).json({ message: "Server Error", error });
   }
 };
 
-// Get all interviews
-export const getAllInterviews = async (req: Request, res: Response): Promise<void> => {
+
+// ✅ Get all interviews
+export const getAllInterviews = async (_req: Request, res: Response) => {
   try {
-    const interviews = await Interview.find().populate('application interviewer candidate');
+    const interviews = await Interview.find().populate('candidate interviewer');
     res.status(200).json(interviews);
-  } catch (err) {
-    res.status(400).json({ error: (err as Error).message });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching interviews' });
   }
 };
 
-// Get interview by ID
-export const getInterview = async (req: Request, res: Response): Promise<any> => {
+// ✅ Get interview by ID
+export const getInterviewById = async (req: Request, res: Response): Promise<any> => {
   try {
-    const interview = await Interview.findById(req.params.id).populate('application interviewer candidate');
-    if (!interview) {
-      return res.status(404).json({ error: 'Interview not found' });
-    }
+    const interview = await Interview.findById(req.params.id).populate('candidate interviewer');
+    if (!interview) return res.status(404).json({ message: 'Interview not found' });
     res.status(200).json(interview);
-  } catch (err) {
-    res.status(400).json({ error: (err as Error).message });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching interview' });
   }
 };
 
-// Update interview status
-export const updateInterviewStatus = async (req: Request, res: Response): Promise<any> => {
+// ✅ Get interviews by user
+export const getInterviewsByUserId = async (req: Request, res: Response) => {
   try {
-    const interview = await Interview.findById(req.params.id);
-    if (!interview) {
-      return res.status(404).json({ error: 'Interview not found' });
-    }
-
-    // Ensure that status is valid (InterviewStatus enum)
-    if (!Object.values(InterviewStatus).includes(req.body.status)) {
-      return res.status(400).json({ error: 'Invalid status value' });
-    }
-
-    await interview.updateStatus(req.body.status);
-    res.status(200).json({ message: 'Interview status updated successfully', interview });
-  } catch (err) {
-    res.status(400).json({ error: (err as Error).message });
+    const interviews = await Interview.find({
+      $or: [{ candidate: req.params.userId }, { interviewer: req.params.userId }]
+    });
+    res.status(200).json(interviews);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching user interviews' });
   }
 };
 
+// ✅ Accept interview
+export const acceptInterview = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const interview = await Interview.findByIdAndUpdate(req.params.id, { status: 'accepted' }, { new: true });
+    if (!interview) return res.status(404).json({ message: 'Interview not found' });
+    res.status(200).json({ message: 'Interview accepted', interview });
+  } catch (error) {
+    res.status(500).json({ message: 'Error accepting interview' });
+  }
+};
 
-// Delete an interview by ID
-export const deleteInterview = async (req: Request, res: Response): Promise<void> => {
+// ✅ Reject interview
+export const rejectInterview = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const interview = await Interview.findByIdAndUpdate(req.params.id, { status: 'rejected' }, { new: true });
+    if (!interview) return res.status(404).json({ message: 'Interview not found' });
+    res.status(200).json({ message: 'Interview rejected', interview });
+  } catch (error) {
+    res.status(500).json({ message: 'Error rejecting interview' });
+  }
+};
+
+// ✅ Update interview
+export const updateInterview = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const interview = await Interview.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!interview) return res.status(404).json({ message: 'Interview not found' });
+    res.status(200).json({ message: 'Interview updated', interview });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating interview' });
+  }
+};
+
+// ✅ Delete interview
+export const deleteInterview = async (req: Request, res: Response): Promise<any> => {
   try {
     const interview = await Interview.findByIdAndDelete(req.params.id);
-    if (!interview) {
-      res.status(404).json({ error: 'Interview not found' });
-      return;
-    }
-    res.status(200).json({ message: 'Interview deleted successfully' });
-  } catch (err) {
-    res.status(400).json({ error: (err as Error).message });
+    if (!interview) return res.status(404).json({ message: 'Interview not found' });
+    res.status(200).json({ message: 'Interview deleted' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting interview' });
   }
 };

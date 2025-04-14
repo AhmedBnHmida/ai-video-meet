@@ -1,6 +1,6 @@
 import { Role, Privilege, Department } from './types';
 
-export interface User {
+export interface IUser {
   id: string;
   firstName: string;
   lastName: string;
@@ -18,19 +18,19 @@ export interface User {
   jobPosts?: string[];  // References to JobPosts
 }
 
-export interface Admin extends User {
+export interface Admin extends IUser {
   // Admin specific methods would be implemented in services
 }
 
-export interface DepartmentManager extends User {
+export interface DepartmentManager extends IUser {
   department: Department;
 }
 
-export interface HRManager extends User {
+export interface HRManager extends IUser {
   // HR Manager specific methods would be implemented in services
 }
 
-export interface Candidate extends User {
+export interface Candidate extends IUser {
   currency: number;
   startJobDate: Date;
 }
@@ -38,7 +38,7 @@ export interface Candidate extends User {
 export type AuthProvider = 'local' | 'google' | 'linkedin';
 
 // Input types for creating/updating
-export interface UserInput extends Omit<User, 'id' | 'createDate' | 'lastLogin'> {}
+export interface UserInput extends Omit<IUser, 'id' | 'createDate' | 'lastLogin'> {}
 export interface AdminInput extends Omit<Admin, 'id' | 'createDate' | 'lastLogin'> {}
 export interface DepartmentManagerInput extends Omit<DepartmentManager, 'id' | 'createDate' | 'lastLogin'> {}
 export interface HRManagerInput extends Omit<HRManager, 'id' | 'createDate' | 'lastLogin'> {}
