@@ -1,13 +1,25 @@
-import express, { Request, Response } from 'express';
-import { createUser, getUser, updateUser, deleteUser, getAllUsers } from '../Controllers/userController'; // Import user controller functions
+import express from 'express';
+import {
+  createUser,
+  getUserById,
+  getAllUsers,
+  updateUser,
+  deleteUser
+} from '../Controllers/userController';
 
 const router = express.Router();
 
-// User Routes
-router.post('/users', createUser);
-router.get('/users', getAllUsers);
-router.get('/users/:id', getUser);
-router.put('/users/:id', updateUser);
-router.delete('/users/:id', deleteUser);
+// 📌 CREATE a new user (usually admin-only)
+router.post('/Add', createUser);
+
+// 📌 READ users
+router.get('/GetAll', getAllUsers);
+router.get('/GetById/:id', getUserById);
+
+// 📌 UPDATE user info
+router.put('/Update/:id', updateUser);
+
+// 📌 DELETE user
+router.delete('/Delete/:id', deleteUser);
 
 export default router;

@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 
 // Lazy load the components
-const InterviewManager = React.lazy(() => import('./components/InterviewManager'));
+const InterviewManager = React.lazy(() => import('./Hr/InterviewManager'));
 const InterviewRoom = React.lazy(() => import('./components/InterviewRoom'));
 
 import { AuthProvider } from './context/AuthContext';
@@ -12,12 +12,18 @@ import Register from './Auth/Register';
 import Login from './Auth/Login';
 import Logout from './Auth/Logout';
 import Home from './components/Home'; 
-import HomeUser from './components/homeUser';
+import HomeUser from './Candidate/homeUser';
+import AddInterviewForm from './Hr/AddInterviewForm';
+import EditInterviewForm from './Hr/EditInterviewForm';
+import ApplicationManager from './Hr/ApplicationManager';
+import MyApplications from './Candidate/MyApplications';
+import Header from './components/Header';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
+        <Header />
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
@@ -27,9 +33,18 @@ function App() {
 
           {/* Protected Routes - Use PrivateRoute for these */}
           <Route path="/manage" element={<PrivateRoute element={<InterviewManager />} />} />
-          <Route path="/HomeUser" element={<PrivateRoute element={<HomeUser />} />} />
-          <Route path="/room/:roomId" element={<PrivateRoute element={<InterviewRoomWrapper />} />} />
           
+          <Route path="/room/:roomId" element={<PrivateRoute element={<InterviewRoomWrapper />} />} />
+          <Route path="/addInterview" element={<PrivateRoute element={<AddInterviewForm />} />} />
+          <Route path="/editInterview/:id" element={<PrivateRoute element={<EditInterviewForm />} />} />
+          <Route path="/HomeHR" element={<PrivateRoute element={<ApplicationManager />} />} />
+
+      
+          {/* Candidate Routes */}  
+          <Route path="/HomeUser" element={<PrivateRoute element={<HomeUser />} />} />
+          <Route path="/my-applications" element={<PrivateRoute element={<MyApplications />} />} />
+
+
           {/* Optional: A default route or a 404 route */}
           <Route path="*" element={<Home />} />
         </Routes>

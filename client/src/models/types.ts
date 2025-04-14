@@ -13,7 +13,7 @@ export enum InterviewStatus {
 }
 
 export enum InterviewType {
-  ON_SITE = 'ON-SITE',
+  ON_SITE = 'ONSITE',
   ONLINE = 'ONLINE'
 }
 
