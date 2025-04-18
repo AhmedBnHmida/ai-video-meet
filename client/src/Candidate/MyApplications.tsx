@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface IApplication {
   _id: string;
@@ -11,6 +12,7 @@ interface IApplication {
 
 const MyApplications: React.FC = () => {
   const [applications, setApplications] = useState<IApplication[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchApplications();
@@ -110,7 +112,7 @@ const MyApplications: React.FC = () => {
                 <td style={{ padding: '10px' }}>
                   {Array.isArray(app.interviews) && app.interviews.length > 0 ? (
                     <button
-                      onClick={() => alert(`Navigate to interview ${app.interviews[0]._id}`)}
+                    onClick={() => navigate(`/interview/${app.interviews[0]._id}`)} 
                       style={{
                         backgroundColor: '#17a2b8',
                         color: 'white',

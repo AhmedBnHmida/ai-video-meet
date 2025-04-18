@@ -18,6 +18,8 @@ import EditInterviewForm from './Hr/EditInterviewForm';
 import ApplicationManager from './Hr/ApplicationManager';
 import MyApplications from './Candidate/MyApplications';
 import Header from './components/Header';
+import MyInterviews from './Candidate/MyInterviews';
+import InterviewDetail from './Candidate/InterviewDetail';
 
 function App() {
   return (
@@ -43,6 +45,8 @@ function App() {
           {/* Candidate Routes */}  
           <Route path="/HomeUser" element={<PrivateRoute element={<HomeUser />} />} />
           <Route path="/my-applications" element={<PrivateRoute element={<MyApplications />} />} />
+          <Route path="/my-interviews" element={<PrivateRoute element={<MyInterviews />} />} />
+          <Route path="/interview/:id" element={<PrivateRoute element={<InterviewDetail />} />} />
 
 
           {/* Optional: A default route or a 404 route */}

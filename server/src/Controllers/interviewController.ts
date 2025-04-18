@@ -1,12 +1,55 @@
 import { Request, Response } from 'express';
 import Interview from '../models/Interview';
+import Application from '../models/Application';
+import { User } from '../models/User';
 
 // ✅ Create a new interview
 export const createInterview = async (req: Request, res: Response) => {
   try {
-    console.log("Received data:", req.body);
-    const interview = new Interview(req.body);
+    const {
+      application,
+      candidate,
+      interviewer,
+      scheduledDate,
+      duration,
+      roomId,
+      type,
+      status,
+      location,
+    } = req.body;
+
+    const interview = new Interview({
+      application,
+      candidate,
+      interviewer,
+      scheduledDate,
+      duration,
+      roomId,
+      type,
+      status,
+      location,
+    });
+    
     await interview.save();
+
+    if (application) {
+      await Application.findByIdAndUpdate(application, {
+        $push: { interviews: interview._id }
+      });
+    }
+
+    if (candidate) {
+      await User.findByIdAndUpdate(candidate, {
+        $push: { interviews: interview._id }
+      });
+    }
+
+    if (interviewer) {
+      await User.findByIdAndUpdate(interviewer, {
+        $push: { interviews: interview._id }
+      });
+    }
+
     res.status(201).json(interview);
   } catch (error) {
     console.error("❌ Error creating interview:", error);

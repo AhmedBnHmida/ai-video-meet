@@ -37,6 +37,7 @@ const Header: React.FC = () => {
           <>
             <button onClick={() => navigate('/HomeUser')} style={btnStyle}>🏠 Dashboard</button>
             <button onClick={() => navigate('/my-applications')} style={btnStyle}>📄 My Applications</button>
+            <button onClick={() => navigate('/my-interviews')} style={btnStyle}>🎤 My Interviews</button>
           </>
         )}
 
