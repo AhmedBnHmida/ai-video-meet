@@ -13,7 +13,6 @@ const AddInterviewForm: React.FC = () => {
   const [interviewers, setInterviewers] = useState<IUser[]>([]);
   const [scheduledDate, setScheduledDate] = useState('');
   const [duration, setDuration] = useState<number>(30);
-  const [roomId, setRoomId] = useState('');
   const [type, setType] = useState<InterviewType>(InterviewType.ONLINE);
   const [status] = useState<InterviewStatus>(InterviewStatus.SCHEDULED);
   const [location, setLocation] = useState('');
@@ -54,6 +53,9 @@ const AddInterviewForm: React.FC = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
+
+      const roomId = `meet-${Date.now()}`;
+
       await axios.post(
         'http://localhost:5000/interview/Add',
         {
@@ -65,7 +67,7 @@ const AddInterviewForm: React.FC = () => {
           roomId,
           type,
           status,
-          location: type === 'ONSITE' ? location : '', // Only send location if onsite
+          location: type === 'ONSITE' ? location : '',
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -82,13 +84,6 @@ const AddInterviewForm: React.FC = () => {
       alert('❌ Failed to create interview. Please check the server.');
     }
   };
-
-  const roomOptions = [
-    { value: 'room1', label: 'Room 1' },
-    { value: 'room2', label: 'Room 2' },
-    { value: 'room3', label: 'Room 3' },
-    { value: 'room4', label: 'Room 4' },
-  ];
 
   return (
     <form onSubmit={handleSubmit} style={{ padding: '30px', maxWidth: '700px', margin: '0 auto' }}>
@@ -128,16 +123,6 @@ const AddInterviewForm: React.FC = () => {
       <div style={inputGroupStyle}>
         <label style={labelStyle}>⏱ Duration (minutes)</label>
         <input type="number" value={duration} onChange={(e) => setDuration(parseInt(e.target.value))} style={inputStyle} />
-      </div>
-
-      <div style={inputGroupStyle}>
-        <label style={labelStyle}>🏠 Room</label>
-        <select value={roomId} onChange={(e) => setRoomId(e.target.value)} required style={inputStyle}>
-          <option value="">Select room</option>
-          {roomOptions.map((room) => (
-            <option key={room.value} value={room.value}>{room.label}</option>
-          ))}
-        </select>
       </div>
 
       <div style={inputGroupStyle}>

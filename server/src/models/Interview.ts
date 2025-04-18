@@ -13,6 +13,7 @@ export interface IInterview extends Document {
   location: string;  // URL for online or physical address
   notes: string;
   feedback: Schema.Types.ObjectId[];  // References to Feedback
+  roomId?: string;
 
   // Methods
   reschedule(newDate: Date): Promise<void>;
@@ -29,7 +30,8 @@ const interviewSchema = new Schema<IInterview>({
   duration: { type: Number, required: true },
   location: { type: String },
   notes: { type: String },
-  feedback: [{ type: Schema.Types.ObjectId, ref: 'Feedback' }]
+  feedback: [{ type: Schema.Types.ObjectId, ref: 'Feedback' }],
+  roomId: { type: String, unique: true }  // Unique room ID for online interviews
 }, {
   timestamps: true
 });

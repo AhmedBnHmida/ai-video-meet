@@ -20,6 +20,7 @@ import MyApplications from './Candidate/MyApplications';
 import Header from './components/Header';
 import MyInterviews from './Candidate/MyInterviews';
 import InterviewDetail from './Candidate/InterviewDetail';
+import InterviewMeeting from './components/InterviewMeeting';
 
 function App() {
   return (
@@ -48,6 +49,10 @@ function App() {
           <Route path="/my-interviews" element={<PrivateRoute element={<MyInterviews />} />} />
           <Route path="/interview/:id" element={<PrivateRoute element={<InterviewDetail />} />} />
 
+
+
+          {/* Interview Meeting Route - This should be protected */}
+          <Route path="/meeting/:roomId" element={<PrivateRoute element={<InterviewMeeting />} />} />
 
           {/* Optional: A default route or a 404 route */}
           <Route path="*" element={<Home />} />

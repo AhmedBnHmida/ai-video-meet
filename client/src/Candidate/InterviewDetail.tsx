@@ -19,7 +19,6 @@ interface Interview {
 const InterviewDetail: React.FC = () => {
   const { id } = useParams();
   const [interview, setInterview] = useState<Interview | null>(null);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchInterview();
@@ -34,25 +33,6 @@ const InterviewDetail: React.FC = () => {
       setInterview(res.data);
     } catch (error) {
       console.error('Error fetching interview', error);
-    }
-  };
-
-  const handleAction = async (action: 'Accept' | 'Reject') => {
-    if (!interview) return;
-    setLoading(true);
-    try {
-      const token = localStorage.getItem('token');
-      await axios.put(
-        `http://localhost:5000/interview/${action}/${interview._id}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      await fetchInterview(); // refresh status
-      alert(`Interview ${action.toLowerCase()}ed successfully!`);
-    } catch (error) {
-      alert(`Failed to ${action.toLowerCase()} interview.`);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -76,26 +56,17 @@ const InterviewDetail: React.FC = () => {
           <tr><td><strong>📅 Created At:</strong></td><td>{new Date(interview.createdAt).toLocaleString()}</td></tr>
         </tbody>
       </table>
-{/*
-      {interview.status === 'SCHEDULED' && (
+
+      {interview.roomId && (
         <div style={{ textAlign: 'center', marginTop: '25px' }}>
           <button
-            onClick={() => handleAction('Accept')}
-            disabled={loading}
-            style={actionBtnStyle("#28a745")}
+            onClick={() => window.location.href = `/meeting/${interview.roomId}`}
+            style={actionBtnStyle("#007bff")}
           >
-            ✅ Accept
-          </button>
-          <button
-            onClick={() => handleAction('Reject')}
-            disabled={loading}
-            style={actionBtnStyle("#dc3545")}
-          >
-            ❌ Reject
+            🔗 Join Meeting
           </button>
         </div>
       )}
-*/} 
     </div>
   );
 };

@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface IInterview {
   _id: string;
   scheduledDate: string;
   status: string;
-  meetingLink: string;
 }
 
 const MyInterviews: React.FC = () => {
   const [interviews, setInterviews] = useState<IInterview[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchInterviews();
@@ -55,7 +56,7 @@ const MyInterviews: React.FC = () => {
             <tr style={{ backgroundColor: '#f2f2f2' }}>
               <th style={{ padding: '10px' }}>📅 Scheduled At</th>
               <th style={{ padding: '10px' }}>📌 Status</th>
-              <th style={{ padding: '10px' }}>🔗 Link</th>
+              <th style={{ padding: '10px' }}>⚙️ Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -79,24 +80,19 @@ const MyInterviews: React.FC = () => {
                   </span>
                 </td>
                 <td style={{ padding: '10px' }}>
-                  {interview.meetingLink ? (
-                    <a
-                      href={interview.meetingLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        backgroundColor: '#17a2b8',
-                        color: 'white',
-                        padding: '6px 12px',
-                        borderRadius: '5px',
-                        textDecoration: 'none',
-                      }}
-                    >
-                      Join Interview
-                    </a>
-                  ) : (
-                    <span style={{ color: '#999' }}>Not available</span>
-                  )}
+                  <button
+                    onClick={() => navigate(`/interview/${interview._id}`)}
+                    style={{
+                      backgroundColor: '#007bff',
+                      color: 'white',
+                      border: 'none',
+                      padding: '6px 12px',
+                      borderRadius: '5px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    🔍 View Details
+                  </button>
                 </td>
               </tr>
             ))}

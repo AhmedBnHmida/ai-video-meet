@@ -126,6 +126,19 @@ const InterviewManager: React.FC = () => {
                   >
                     🗑 Delete
                   </button>
+                  <button
+                    onClick={() => navigate(`/interview/${interview._id}`)}
+                    style={{
+                      backgroundColor: '#007bff',
+                      color: 'white',
+                      border: 'none',
+                      padding: '6px 12px',
+                      borderRadius: '5px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    🔍 View Details
+                  </button>
                 </td>
               </tr>
             ))}
