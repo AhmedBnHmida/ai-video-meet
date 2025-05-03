@@ -1,103 +1,60 @@
-// src/components/InterviewRoom.tsx
 import React, { useEffect, useRef, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
+import DailyIframe from '@daily-co/daily-js';
+import { useParams } from 'react-router-dom';
 
-interface InterviewRoomProps {
-  roomId: string;
-}
-
-const socket: Socket = io('http://localhost:5000');
-
-const InterviewRoom: React.FC<InterviewRoomProps> = ({ roomId }) => {
-  const localVideoRef = useRef<HTMLVideoElement>(null);
-  const remoteVideoRef = useRef<HTMLVideoElement>(null);
-  const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
-  const [joined, setJoined] = useState(false);
-
-  const iceServers = {
-    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-  };
+const InterviewRoom: React.FC = () => {
+  const { roomId } = useParams();
+  const callFrameRef = useRef<any>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [error, setError] = useState<string | null>(null); // Correct use of useState
 
   useEffect(() => {
-    if (!joined) return;
+    if (!roomId) {
+      alert("Room ID is missing");
+      return;
+    }
 
-    peerConnectionRef.current = new RTCPeerConnection(iceServers);
-
-    // Setup local stream
-    navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
-      .then((stream) => {
-        if (localVideoRef.current) {
-          localVideoRef.current.srcObject = stream;
-        }
-        stream.getTracks().forEach((track) => peerConnectionRef.current?.addTrack(track, stream));
-      })
-      .catch((err) => console.error('Error accessing media devices:', err));
-
-    // When remote track received
-    peerConnectionRef.current.ontrack = (event) => {
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = event.streams[0];
-      }
-    };
-
-    // ICE candidate handler
-    peerConnectionRef.current.onicecandidate = (event) => {
-      if (event.candidate) {
-        socket.emit('ice-candidate', { roomId, candidate: event.candidate });
-      }
-    };
-
-    // Socket events
-    socket.emit('join-room', roomId);
-
-    socket.on('user-joined', async () => {
-      if (!peerConnectionRef.current) return;
-      const offer = await peerConnectionRef.current.createOffer();
-      await peerConnectionRef.current.setLocalDescription(offer);
-      socket.emit('offer', { roomId, offer });
-    });
-
-    socket.on('offer', async (offer) => {
-      if (!peerConnectionRef.current) return;
-      await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(offer));
-      const answer = await peerConnectionRef.current.createAnswer();
-      await peerConnectionRef.current.setLocalDescription(answer);
-      socket.emit('answer', { roomId, answer });
-    });
-
-    socket.on('answer', async (answer) => {
-      if (!peerConnectionRef.current) return;
-      await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(answer));
-    });
-
-    socket.on('ice-candidate', async (candidate) => {
-      if (candidate && peerConnectionRef.current) {
-        try {
-          await peerConnectionRef.current.addIceCandidate(candidate);
-        } catch (err) {
-          console.error('Error adding ICE candidate:', err);
-        }
+    const frame = DailyIframe.createFrame({
+      showLeaveButton: true,
+      iframeStyle: {
+        position: 'relative',
+        width: '100%',
+        height: '600px',
+        border: '0'
       }
     });
+
+    try {
+      frame.join({ url: `https://ahmedvideo.daily.co/${roomId}` });
+    } catch (err: any) {
+      console.error("❌ Failed to join Daily room:", err?.message || JSON.stringify(err));
+      if (err?.message.includes("account-missing-payment-method")) {
+        setError("This account does not have a valid payment method. Please check your billing.");
+      }
+    }
+
+    // Ensure frame.iframe() is not null and is of type HTMLIFrameElement before appending
+    const iframe = frame.iframe();
+    if (containerRef.current && iframe instanceof HTMLIFrameElement) {
+      containerRef.current.innerHTML = ''; // Clear previous content
+      containerRef.current.appendChild(iframe); // Append the iframe
+    } else {
+      console.error("❌ Daily iframe is not available or is not an HTMLIFrameElement");
+    }
+
+    callFrameRef.current = frame;
 
     return () => {
-      socket.disconnect();
-      peerConnectionRef.current?.close();
+      frame.leave().catch((err: any) => {
+        console.error("Error while leaving the room:", err?.message || JSON.stringify(err));
+      });
     };
-  }, [joined, roomId]);
+  }, [roomId]);
 
   return (
     <div>
-      <h2>Interview Room: {roomId}</h2>
-      {!joined ? (
-        <button onClick={() => setJoined(true)}>Join Room</button>
-      ) : (
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <video ref={localVideoRef} autoPlay muted style={{ width: '300px' }} />
-          <video ref={remoteVideoRef} autoPlay style={{ width: '300px' }} />
-        </div>
-      )}
+      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>📡 Live Interview Room</h2>
+      <div ref={containerRef} style={{ width: '100%', height: '600px' }} />
     </div>
   );
 };

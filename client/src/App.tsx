@@ -37,7 +37,6 @@ function App() {
           {/* Protected Routes - Use PrivateRoute for these */}
           <Route path="/manage" element={<PrivateRoute element={<InterviewManager />} />} />
           
-          <Route path="/room/:roomId" element={<PrivateRoute element={<InterviewRoomWrapper />} />} />
           <Route path="/addInterview" element={<PrivateRoute element={<AddInterviewForm />} />} />
           <Route path="/editInterview/:id" element={<PrivateRoute element={<EditInterviewForm />} />} />
           <Route path="/HomeHR" element={<PrivateRoute element={<ApplicationManager />} />} />
@@ -53,6 +52,7 @@ function App() {
 
           {/* Interview Meeting Route - This should be protected */}
           <Route path="/meeting/:roomId" element={<PrivateRoute element={<InterviewMeeting />} />} />
+          <Route path="/room/:roomId" element={<PrivateRoute element={<InterviewRoom />} />} />
 
           {/* Optional: A default route or a 404 route */}
           <Route path="*" element={<Home />} />
@@ -61,11 +61,11 @@ function App() {
     </AuthProvider>
   );
 }
-
+/*
 // Wrapper to pass roomId from URL params
 const InterviewRoomWrapper: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
   return <InterviewRoom roomId={roomId || 'default-room'} />;
 };
-
+*/
 export default App;

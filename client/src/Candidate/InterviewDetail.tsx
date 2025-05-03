@@ -56,7 +56,7 @@ const InterviewDetail: React.FC = () => {
           <tr><td><strong>📅 Created At:</strong></td><td>{new Date(interview.createdAt).toLocaleString()}</td></tr>
         </tbody>
       </table>
-
+{/*}
       {interview.roomId && (
         <div style={{ textAlign: 'center', marginTop: '25px' }}>
           <button
@@ -67,6 +67,18 @@ const InterviewDetail: React.FC = () => {
           </button>
         </div>
       )}
+*/}
+      {interview.roomId && (
+        <div style={{ textAlign: 'center', marginTop: '25px' }}>
+          <button
+            onClick={() => window.location.href = `/room/${interview.roomId}`}
+            style={actionBtnStyle("#007bff")}
+          >
+            🔗 Join Meeting
+          </button>
+        </div>
+      )}
+
     </div>
   );
 };

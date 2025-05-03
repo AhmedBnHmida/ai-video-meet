@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Interview from '../models/Interview';
 import Application from '../models/Application';
 import { User } from '../models/User';
+import axios from 'axios';
 
 // ✅ Create a new interview
 export const createInterview = async (req: Request, res: Response) => {
@@ -12,11 +13,31 @@ export const createInterview = async (req: Request, res: Response) => {
       interviewer,
       scheduledDate,
       duration,
-      roomId,
       type,
       status,
       location,
     } = req.body;
+
+    // Step 1: create a Daily.co room via API
+    const dailyRes = await axios.post(
+      'https://api.daily.co/v1/rooms',
+      {
+        name: `room-${Date.now()}`,
+        properties: {
+          enable_chat: true,
+          start_video_off: true,
+          start_audio_off: true,
+        },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.DAILY_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    const roomId = dailyRes.data.name; // ✅ save generated room name
 
     const interview = new Interview({
       application,
@@ -29,33 +50,34 @@ export const createInterview = async (req: Request, res: Response) => {
       status,
       location,
     });
-    
+
     await interview.save();
 
     if (application) {
       await Application.findByIdAndUpdate(application, {
-        $push: { interviews: interview._id }
+        $push: { interviews: interview._id },
       });
     }
 
     if (candidate) {
       await User.findByIdAndUpdate(candidate, {
-        $push: { interviews: interview._id }
+        $push: { interviews: interview._id },
       });
     }
 
     if (interviewer) {
       await User.findByIdAndUpdate(interviewer, {
-        $push: { interviews: interview._id }
+        $push: { interviews: interview._id },
       });
     }
 
     res.status(201).json(interview);
   } catch (error) {
-    console.error("❌ Error creating interview:", error);
-    res.status(500).json({ message: "Server Error", error });
+    console.error('❌ Error creating interview:', error);
+    res.status(500).json({ message: 'Server Error', error });
   }
 };
+
 
 
 // ✅ Get all interviews

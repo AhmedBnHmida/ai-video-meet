@@ -54,7 +54,7 @@ const AddInterviewForm: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const roomId = `meet-${Date.now()}`;
+//      const roomId = `meet-${Date.now()}`; 
 
       await axios.post(
         'http://localhost:5000/interview/Add',
@@ -64,7 +64,7 @@ const AddInterviewForm: React.FC = () => {
           interviewer,
           scheduledDate,
           duration,
-          roomId,
+//          roomId,
           type,
           status,
           location: type === 'ONSITE' ? location : '',
