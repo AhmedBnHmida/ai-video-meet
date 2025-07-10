@@ -71,7 +71,7 @@ const InterviewDetail: React.FC = () => {
       {interview.roomId && (
         <div style={{ textAlign: 'center', marginTop: '25px' }}>
           <button
-            onClick={() => window.location.href = `/room/${interview.roomId}`}
+            onClick={() => window.location.href = `/meeting/${interview.roomId}`}
             style={actionBtnStyle("#007bff")}
           >
             🔗 Join Meeting
